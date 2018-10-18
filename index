@@ -1,0 +1,135 @@
+Confiabilidade	
+#---------------------------------------------------------------
+# OBJETIVO:
+# Resolver o "Problema da Confiabilidade do Aviao"
+# atraves de simulacao
+#---------------------------------------------------------------
+# Author: Denise B. Ferrari <denise@ita.br>
+# Date Created:  Ago 25 2011
+# Last Modified: Ago 11 2016
+#---------------------------------------------------------------
+
+# Problema da Confiabilidade do Aviao
+# Um certo aviao com quatro turbinas precisa de tres ou mais turbinas 
+# funcionando para garantir a seguranca de voo. Um outro aviao tem duas
+# turbinas e precisa de apenas uma turbina funcionando para voar em 
+# seguranca. As turbinas funcionam independentemente e tem probabilidade
+# p de funcionar corretamente durante um voo.
+
+# Vamos simular a confiabilidade dos dois avioes
+
+# Sejam os eventos:
+# A = o aviao de 4 turbinas fez pouso forcado
+# B = o aviao de 2 turbinas fez pouso forcado
+# Desejamos calcular:
+# pa = P[A] e pb = P[B]
+
+# Respostas teoricas:
+# P[A] = 1 - 4p^3 + 3p^4
+# P[B] = 1 - p^2  - 2p(1-p)
+
+Confiabilidade <- function(p, nS){
+	#
+	# Args:
+    # p      : probabilidade de funcionamento perfeito (cada turbina)
+    # na     : no. de turbinas do aviao A
+    # nb     : no. de turbinas do aviao B
+    # nS     : no. de repeticoes do experimento (simulacoes)
+    # pa.T   : probabilidade teorica para aviao A
+    # pb.T   : probabilidade teorica para aviao B
+    #
+    # Saida:
+    # Grafico da frequencia relativa vs. numero de experimentos
+    #
+    
+    na <- 4
+    nb <- 2
+    # Gera vetores para receberem os valores observados
+    freq.rel.A <- c()
+    freq.rel.B <- c()
+    obs.A <- vector(length = nS)
+    obs.B <- vector(length = nS)
+            
+    for (i in 1:nS){
+    	# Atribui condicao para as turbinas de cada aviao
+    	turb.A <- sample(c(0,1), na, replace=TRUE, prob=c(1-p, p))
+    	turb.B <- sample(c(0,1), nb, replace=TRUE, prob=c(1-p, p))
+    	
+    	# Atribui valores (0: voo seguro, 1: pouso forcado)
+    	obs.A[i] <- ifelse(sum(turb.A) >=3, 0, 1)
+    	obs.B[i] <- ifelse(sum(turb.B) >=1, 0, 1)
+        
+        # Calcula frequencia relativa de pousos forcados
+        freq.rel.A[i] <- sum(obs.A[1:i])/i
+        freq.rel.B[i] <- sum(obs.B[1:i])/i
+    	}    
+ 
+    # Probabilidades teoricas
+	  pa.T <- 1 - 4*p^3 + 3*p^4
+    pb.T <- 1 - p^2  - 2*p*(1-p)
+	 
+	# Gera grafico da frequencia relativa vs. numero de experimentos
+	plot(freq.rel.A, 
+	     main = paste("probabilidade funcionamento = ", p),
+	     xlab = "Numero de experimentos",
+	     ylab = "Freq. Relativa de Pousos Forcados",
+	     ylim = c(0,1),
+	     type = "l", lwd = 2, col = "red")
+	lines(freq.rel.B, lwd = 2, col= "blue")    
+	 
+    abline(h = pa.T, lty = "dashed", col ="red")
+    abline(h = pb.T, lty = "dashed", col ="blue")
+    
+    # Legenda
+    leg.text <- c("A: 4 turbinas", "B: 2 turbinas")
+    legend("topright", leg.text, col = c(2,4), lty = c(1,1), bty="n", inset=0.1)
+    text (nS/5, (pa.T+0.05), paste("P[A]=", round(pa.T, digits=10)), pos = 4) 
+    text (nS/2, (pb.T+0.05), paste("P[B]=", round(pb.T, digits=10)), pos = 4) 
+    
+    return(list("A"=sum(obs.A), "B"=sum(obs.B)))
+	}
+
+
+## EXEMPLOS:
+par(mfrow=c(4,3))
+
+# p=0.5, 10 simulacoes
+Confiabilidade(p=0.9, nS=100)
+
+# p=0.5, 100 simulacoes
+Confiabilidade(p=0.5, nS=100)
+
+# p=0.5, 1000 simulacoes
+Confiabilidade(p=0.5, nS=1000)
+
+# p=0.8, 10 simulacoes
+Confiabilidade(p=0.8, nS=10)
+
+# p=0.8, 100 simulacoes
+Confiabilidade(p=0.8, nS=100)
+
+# p=0.8, 1000 simulacoes
+Confiabilidade(p=0.8, nS=1000)
+
+# p=0.9, 10 simulacoes
+Confiabilidade(p=0.9, nS=10)
+
+# p=0.9, 100 simulacoes
+Confiabilidade(p=0.9, nS=100)
+
+# p=0.9, 1000 simulacoes
+Confiabilidade(p=0.9, nS=1000)
+
+
+# p=0.999, 10 simulacoes
+Confiabilidade(p=0.999, nS=10)
+
+# p=0.999, 100 simulacoes
+Confiabilidade(p=0.999, nS=100)
+
+# p=0.999, 1000 simulacoes
+Confiabilidade(p=0.999, nS=1000)
+
+	
+#--------------------------------------------------------------
+# EOF
